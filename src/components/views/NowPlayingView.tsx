@@ -128,7 +128,7 @@ const NowPlayingView = () => {
                         <div className='size-full gradient flex flex-col gap-4 justify-end p-4 font-pixel'>
                             <h1 className='text-5xl'>{currentlyPlaying.title}</h1>
                             <p>{currentlyPlaying.artist}</p>
-                            <div style={{ width: ((timePlayed / duration) * 100) + '%' }} className='h-[5px] bg-[var(--app-primary-color)]'>
+                            <div style={{ width: ((timePlayed / duration) * 100) + '%' }} className='h-[5px] bg-[var(--app-primary-color)] w-0'>
 
                             </div>
                         </div>

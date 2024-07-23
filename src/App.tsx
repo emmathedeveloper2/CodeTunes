@@ -1,4 +1,4 @@
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 import CommandPalette from "./components/command-palette/CommandPalette"
 import { useKeyboardEvents } from "./hooks/KeyboardEvents"
 import { AppContext } from "./state/Provider"
@@ -22,9 +22,12 @@ function App() {
   onOpenCommandPalette(() => setCommandPaletteOpen(true))
 
   onEscape(() => {
-
     setCommandPaletteOpen(false)
   })
+
+  useEffect(() => {
+    document.addEventListener('contextmenu' , e => e.preventDefault())
+  } , [])
 
   return (
     <>
