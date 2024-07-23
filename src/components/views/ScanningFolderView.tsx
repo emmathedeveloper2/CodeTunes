@@ -1,5 +1,4 @@
 import { dialog } from '@tauri-apps/api'
-import { readDir } from '@tauri-apps/api/fs'
 import { useContext, useEffect, useState } from 'react'
 import { APPVIEWS, AppContextProps, Song } from '../../types'
 import { AppContext } from '../../state/Provider'

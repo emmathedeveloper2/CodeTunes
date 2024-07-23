@@ -1,4 +1,4 @@
-import { HomeIcon, ListMusicIcon, LucideListPlus, Music2Icon, PaletteIcon, PlayIcon } from 'lucide-react'
+import { HomeIcon, ListMusicIcon, LucideListPlus, Music2Icon, PlayIcon } from 'lucide-react'
 import { useContext, useEffect, useRef, useState } from 'react'
 import { AppContext } from '../../state/Provider'
 import { APPVIEWS, AppContextProps } from '../../types'

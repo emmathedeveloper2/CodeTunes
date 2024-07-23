@@ -67,37 +67,3 @@ export const songAlreadyExists = (existingSongs: Song[] , song: Song) => {
 
   return existingSongs.find(s => s.title === song.title && s.artist === song.artist) ? true : false
 }
-
-class Emitter {
-
-  #events: Map<string , ({ id: number , callback: (data?: any) => void})[]>
-
-  constructor(){
-    this.#events = new Map()
-  }
-
-  on(eventName: string , callback: () => void){
-
-    const id = Math.floor(Math.random() * 1000000)
-
-    if(this.#events.has(eventName)){
-      const callbacks = this.#events.get(eventName) as any
-
-      this.#events.set(eventName , [...callbacks , { id , callback }])
-    }else{
-      this.#events.set(eventName , [{ id , callback }])
-    }
-
-    return () => {
-      this.#events.set(eventName , this.#events.get(eventName)?.filter(ev => ev.id != id) as any)
-
-      const eventList = this.#events.get(eventName)
-
-      if(eventList && eventList.length < 1) this.#events.delete(eventName)
-    }
-  }
-
-  emit(eventName: string){
-    this.#events.get(eventName)?.forEach(ev => ev.callback())
-  }
-}

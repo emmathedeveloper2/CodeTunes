@@ -1,5 +1,5 @@
 import { createContext, useEffect, useRef, useState } from "react";
-import { APPVIEWS, Album, AppContextProps, AppViewData, Artist, PlayList, Song, ToastProps, ToastType } from "../types";
+import { APPVIEWS, Album, AppContextProps, AppViewData, Artist, PlayList, Song, ToastProps } from "../types";
 import { playListsStore, songsStore } from '../db/index'
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { exists } from "@tauri-apps/api/fs";
