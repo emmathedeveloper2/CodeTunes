@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react"
+import { useContext } from "react"
 import CommandPalette from "./components/command-palette/CommandPalette"
 import { useKeyboardEvents } from "./hooks/KeyboardEvents"
 import { AppContext } from "./state/Provider"
@@ -12,13 +12,12 @@ import AlbumView from "./components/views/AlbumView"
 import ToggleInPlaylist from "./components/now-playing/ToggleInPlaylist"
 import FavouritesView from "./components/views/FavouritesView"
 import Toast from "./components/shared/Toast"
-import { show } from "@tauri-apps/api/app"
 
 function App() {
 
   const { onOpenCommandPalette , onEscape } = useKeyboardEvents()
 
-  const { view , commandPaletteOpen , setCommandPaletteOpen , songToToggleInPlayList , toast , showToast } = useContext<AppContextProps>(AppContext)
+  const { view , commandPaletteOpen , setCommandPaletteOpen , songToToggleInPlayList , toast } = useContext<AppContextProps>(AppContext)
 
   onOpenCommandPalette(() => setCommandPaletteOpen(true))
 
