@@ -1,0 +1,3 @@
+VERSION 1;
+
+CREATE_STORE songs playlists;

@@ -1,0 +1,139 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Geist Black";
+  src: url("./assets/fonts/Geist-Black.ttf");
+}
+@font-face {
+  font-family: "Geist Medium";
+  src: url("./assets/fonts/Geist-Medium.ttf");
+}
+@font-face {
+  font-family: "Geist Light";
+  src: url("./assets/fonts/Geist-Light.ttf");
+}
+@font-face {
+  font-family: "Pixel";
+  src: url("./assets/fonts/Pixel.ttf");
+}
+::-webkit-scrollbar{
+  appearance: none;
+}
+::-webkit-scrollbar-track{
+  background-color: transparent;
+}
+::-webkit-scrollbar-thumb{
+  background: var(--app-secondary-color);
+}
+::-webkit-scrollbar-corner{
+  display: none;
+}
+::selection {
+  background-color: var(--app-primary-color);
+  color: var(--app-on-primary-color);
+}
+*{
+  -webkit-user-select: none;
+  user-select: none;
+}
+/* :root {
+  --app-primary-color: tomato;
+} */
+[data-theme="light"] {
+  --app-secondary-color: #cccccc;
+  --app-primary-color: #545454;
+  --app-base-color: #fff;
+  --app-shadow-color: var(--app-secondary-color);
+  --app-text-color: #fff;
+
+  --app-on-secondary-color: #545454;
+  --app-on-base-color: #363636;
+  --app-on-primary-color: #fff;
+  --gradient-lighter-color: rgba(255,255,255,.9);
+  --gradient-color: rgb(255, 255, 255);
+}
+
+[data-theme="dark"] {
+  --app-secondary-color: #555555;
+  --app-primary-color: #fff;
+  --app-base-color: #333;
+  --app-shadow-color: var(--app-base-color);
+  --app-text-color: #fff;
+
+  --app-on-secondary-color: #b8b8b8;
+  --app-on-base-color: #fff;
+  --title-color: #b6b2b2;
+  --app-on-primary-color: #333;
+  --gradient-lighter-color: rgba(0,0,0,.9);
+  --gradient-color: rgb(0,0,0);
+}
+
+[data-theme="oled"] {
+  --app-secondary-color: #252525;
+  --app-primary-color: #fff;
+  --app-base-color: #000;
+  --app-shadow-color: var(--app-base-color);
+  --app-text-color: #fff;
+
+  --app-on-secondary-color: #7b7b7b;
+  --app-on-base-color: #b6b2b2;
+  --app-on-primary-color: #333;
+  --gradient-lighter-color: rgba(0,0,0,.9);
+  --gradient-color: rgb(0,0,0);
+}
+body {
+  background-color: var(--app-base-color);
+  color: var(--app-on-base-color);
+}
+.gradient {
+  color: var(--app-on-base-color);
+  background-image: linear-gradient(transparent , var(--gradient-color));
+}
+.gradient-wider {
+  color: var(--app-on-base-color);
+  background-image: linear-gradient(transparent , var(--gradient-lighter-color) , var(--gradient-color));
+}
+body,
+html,
+#root {
+  height: 100%;
+  width: 100%;
+}
+
+input , input::placeholder {
+    font-family: 'Geist Medium';
+}
+.title-text{
+  @apply font-pixel text-xl lg:text-5xl
+}
+.main-nav{
+  background-color: var(--bg);
+}
+.NOW_PLAYING{
+  --bg: rgba(0 , 0 , 0 , .5);
+  --highlight: #fff;
+  --on-highlight: #000;
+}
+.main-nav:not(.NOW_PLAYING){
+  --bg: rgba(0 , 0 , 0 , .2);
+  --highlight: #fff;
+  --on-highlight: #000;
+}
+.highlighted{
+  color: var(--app-on-primary-color);
+  background-color: var(--app-primary-color);
+}
+.big-round-button {
+  @apply size-[50px] shadow-lg rounded-full transition-opacity grid place-items-center cursor-pointer
+}
+.animate-playing{
+  animation: playing .5s infinite;
+}
+
+@keyframes playing {
+    50%{
+      height: 0;
+    } 
+}

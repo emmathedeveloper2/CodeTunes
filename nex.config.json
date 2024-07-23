@@ -1,0 +1,7 @@
+{
+  "language": "js",
+  "outDir": "/src/db",
+  "databases": {
+    "codetunes": 1
+  }
+}
