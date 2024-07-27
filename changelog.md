@@ -9,3 +9,4 @@
 - Added current time and duration to Now Playing view ⏳
 - You can now click on items in the command palette 👆
 - You can now put songs on repeat 🔁
+- Changed Command palette key from *K* to *P*
