@@ -24,14 +24,14 @@ function FavouritesView() {
 
         if (!song) return
 
-        setCurrentlyPlaying(song)
-
         if (songs.length) setQueue(songs)
+        
+        setCurrentlyPlaying(song)
     }
 
     useEffect(() => {
         load()
-    }, [favouriteSongs])
+    }, [favouriteSongs , allSongs])
 
     return (
         <div className='fixed top-0 left-0 size-full bg-[var(--app-base-color)] font-pixel'>

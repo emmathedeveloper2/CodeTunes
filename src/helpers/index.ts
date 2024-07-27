@@ -67,3 +67,32 @@ export const songAlreadyExists = (existingSongs: Song[] , song: Song) => {
 
   return existingSongs.find(s => s.title === song.title && s.artist === song.artist) ? true : false
 }
+
+/**
+ * @description Runs the `dealWithUnknowns` and `getMusicMetadata` functions
+ * @param {string} path path to mp3 file
+ */
+export const processSong = async (path: string) => {
+    const metadata = await getMusicMetadata(path)
+
+    return dealWithUnknowns(metadata)
+}
+
+export const parseTime = (milli: number) => {
+
+    const floored = parseInt(milli.toFixed(0))
+
+    let seconds = (floored % 60).toString()
+
+    let minutes =  Math.floor(floored / 60).toString()
+
+    let hours =  Math.floor(floored / 3600).toString()
+
+    seconds = seconds.length <= 1 ? '0' + seconds : seconds
+
+    minutes = hours != '0' && minutes.length <= 1 ? '0' + minutes : minutes
+
+    hours = hours.length <= 1 ? '0' + hours : hours
+
+    return `${!hours.startsWith('0') ? hours : ''} ${minutes} : ${seconds}`.trim()
+}

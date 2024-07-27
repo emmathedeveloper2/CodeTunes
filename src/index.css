@@ -51,6 +51,7 @@
   --app-on-secondary-color: #545454;
   --app-on-base-color: #363636;
   --app-on-primary-color: #fff;
+  --modal-wrapper-bg: rgba(255,255,255,.5);
   --gradient-lighter-color: rgba(255,255,255,.9);
   --gradient-color: rgb(255, 255, 255);
 }
@@ -66,6 +67,7 @@
   --app-on-base-color: #fff;
   --title-color: #b6b2b2;
   --app-on-primary-color: #333;
+  --modal-wrapper-bg: rgba(0,0,0,.5);
   --gradient-lighter-color: rgba(0,0,0,.9);
   --gradient-color: rgb(0,0,0);
 }
@@ -80,6 +82,7 @@
   --app-on-secondary-color: #7b7b7b;
   --app-on-base-color: #b6b2b2;
   --app-on-primary-color: #333;
+  --modal-wrapper-bg: rgba(0,0,0,.5);
   --gradient-lighter-color: rgba(0,0,0,.9);
   --gradient-color: rgb(0,0,0);
 }
@@ -129,7 +132,7 @@ input , input::placeholder {
   @apply size-[50px] shadow-lg rounded-full transition-opacity grid place-items-center cursor-pointer
 }
 .animate-playing{
-  animation: playing .5s infinite;
+  animation: playing .8s infinite;
 }
 
 @keyframes playing {

@@ -21,6 +21,8 @@ export type AppContextProps = {
     setSongToToggleInPlayList: Dispatch<SetStateAction<Song | undefined>>,
     favouriteSongs: number[],
     setFavouriteSongs: Dispatch<SetStateAction<number[]>>,
+    loop: boolean,
+    setLoop: Dispatch<SetStateAction<boolean>>,
     toggleFavourites: (songId?: number) => void,
     player: MutableRefObject<HTMLAudioElement>,
     queue: Song[],
@@ -31,6 +33,9 @@ export type AppContextProps = {
     toast: ToastProps,
     setToast: Dispatch<SetStateAction<ToastProps>>,
     showToast: (options: ToastProps) => void
+    modal: ModalProps,
+    setModal: Dispatch<SetStateAction<ModalProps>>,
+    closeModal: () => void,
 }
 
 export type ToastType = 'success' | 'warning' | 'error' | 'info' | 'loading' | 'none'
@@ -39,6 +44,18 @@ export type ToastProps = {
     message: string
     type: ToastType
     shown: boolean
+}
+
+export type ModalButtonType = {
+    text: string,
+    onClick?: (...data: any) => any,
+}
+
+export type ModalProps = {
+    open: boolean,
+    title: string,
+    description?: string,
+    buttons: ModalButtonType[]
 }
 
 export type Song = {

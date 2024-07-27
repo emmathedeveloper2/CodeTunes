@@ -2,7 +2,7 @@ import { dialog } from '@tauri-apps/api'
 import { useContext, useEffect, useState } from 'react'
 import { APPVIEWS, AppContextProps, Song } from '../../types'
 import { AppContext } from '../../state/Provider'
-import { dealWithUnknowns, getMusicMetadata, songAlreadyExists } from '../../helpers'
+import { processSong, songAlreadyExists } from '../../helpers'
 import { songsStore } from '../../db'
 
 const ScanningFolderView = () => {
@@ -22,9 +22,9 @@ const ScanningFolderView = () => {
 
     if(songs && Array.isArray(songs)){
 
-        setMessage('SCANNING FOLDER')
+        setMessage('EXTRACTING DATA')
 
-        const extractedSongs = (await Promise.all(songs.map(s => getMusicMetadata(s)))).map(song => dealWithUnknowns(song))
+        const extractedSongs = (await Promise.all(songs.map(s => processSong(s))))
 
         setFoundSongs(extractedSongs as any)
 

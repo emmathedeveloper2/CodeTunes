@@ -58,9 +58,9 @@ function PlayListView() {
 
         if (!song) return
 
-        setCurrentlyPlaying(song)
-
         if (songs.length) setQueue(songs)
+
+        setCurrentlyPlaying(song)
     }
 
     const addSongsToPlayList = async (songIds: number[]) => {

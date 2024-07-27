@@ -1,6 +1,6 @@
-import { useContext, useEffect, useRef, useState } from 'react'
-import { AppContext } from '../../state/Provider'
-import { APPVIEWS, AppContextProps, Song } from '../../types'
+import { useEffect, useRef, useState } from 'react'
+import { APPVIEWS, Song } from '../../types'
+import useAppState from '../../hooks/useAppState'
 
 type SearchSongsMenuProp = {
     search: string
@@ -8,11 +8,13 @@ type SearchSongsMenuProp = {
 
 function SearchSongsMenu({ search }: SearchSongsMenuProp) {
 
-    const { setCommandPaletteOpen , view , setView , currentlyPlaying , setCurrentlyPlaying , allSongs } = useContext<AppContextProps>(AppContext)
+    const { setCommandPaletteOpen , view , setView , currentlyPlaying , setCurrentlyPlaying , allSongs } = useAppState()
 
     const [highlightIndex, setHighlightIndex] = useState(0)
 
     const highlightIndexRef = useRef(highlightIndex)
+
+    const currentlyHighlightedEl = useRef<any>()
 
     const [songs, setSongs] = useState<Song[]>([])
 
@@ -28,32 +30,40 @@ function SearchSongsMenu({ search }: SearchSongsMenuProp) {
             setSongs(filtered)
         }
 
-
         setHighlightIndex(0)
     }
 
     const onKey = () => {
 
-        if (key.char === 'ArrowDown') setHighlightIndex(p => p >= songs.length - 1 ? 0 : p + 1)
+        if (key.char === 'ArrowDown'){
+            setHighlightIndex(p => p >= songs.length - 1 ? 0 : p + 1)
+        }
 
-        if (key.char === 'ArrowUp') setHighlightIndex(p => p == 0 ? songs.length - 1 : p - 1)
+        if (key.char === 'ArrowUp'){
+            setHighlightIndex(p => p == 0 ? songs.length - 1 : p - 1)
+        } 
 
         if (key.char === 'Enter') {
 
             const foundSong = songs[highlightIndexRef.current]
 
-            if(foundSong){
-                if(view.id === APPVIEWS.NOW_PLAYING){
-
-                    foundSong.path != currentlyPlaying?.path ? setCurrentlyPlaying(foundSong) : setView({ id: APPVIEWS.NOW_PLAYING });
-
-                } else {
-                    setView({ id: APPVIEWS.NOW_PLAYING , data: foundSong })
-                }
-            }
-
-            setCommandPaletteOpen(false)
+            playSong(foundSong)
         }
+    }
+
+    const playSong = (song?: Song) => {
+
+        if(song){
+            if(view.id === APPVIEWS.NOW_PLAYING){
+
+                song.path != currentlyPlaying?.path ? setCurrentlyPlaying(song) : setView({ id: APPVIEWS.NOW_PLAYING });
+
+            } else {
+                setView({ id: APPVIEWS.NOW_PLAYING , data: song })
+            }
+        }
+
+        setCommandPaletteOpen(false)
     }
 
     const handleKeyDown = (e: any) => {
@@ -70,6 +80,7 @@ function SearchSongsMenu({ search }: SearchSongsMenuProp) {
 
     useEffect(() => {
         highlightIndexRef.current = highlightIndex
+        console.log(currentlyHighlightedEl);
     }, [highlightIndex])
 
     useEffect(runSearch, [search])
@@ -77,18 +88,18 @@ function SearchSongsMenu({ search }: SearchSongsMenuProp) {
     useEffect(onKey , [key])
 
     return (
-        <div className='flex-1 overflow-scroll font-geist-medium p-2'>
+        <ul className='flex-1 overflow-auto font-geist-medium p-2 gap-2'>
             {songs.map((song, i) => (
-                <div key={i} className={`w-full flex items-center gap-4 p-2 rounded ${highlightIndex == i ? 'highlighted' : ''} font-pixel`}>
+                <li onClick={() => playSong(song)} key={i} className={`w-full flex items-center gap-4 p-2 rounded ${highlightIndex == i ? 'highlighted' : ''} font-pixel mb-2 hover:bg-[var(--app-secondary-color)]`}>
                     <div className='size-[40px] bg-[var(--app-base-color)] overflow-hidden rounded-md'>
                         {song.cover &&
-                            <img src={song.cover || ''} alt={song.title} className='size-full object-cover' />
+                            <img src={song.cover} alt={song.title} className='size-full object-cover' />
                         }
                     </div>
                     <b>{song.title}</b>
-                </div>
+                </li>
             ))}
-        </div>
+        </ul>
     )
 }
 

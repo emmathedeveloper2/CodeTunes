@@ -1,7 +1,7 @@
-import { HomeIcon, ListMusicIcon, LucideListPlus, Music2Icon, PlayIcon } from 'lucide-react'
-import { useContext, useEffect, useRef, useState } from 'react'
-import { AppContext } from '../../state/Provider'
-import { APPVIEWS, AppContextProps } from '../../types'
+import { HomeIcon, ListMusicIcon, LucideListPlus, Music2Icon, PaletteIcon, PlayIcon } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { APPVIEWS } from '../../types'
+import useAppState from '../../hooks/useAppState'
 
 type OptionsMenuProp = {
     search: string
@@ -9,7 +9,7 @@ type OptionsMenuProp = {
 
 function OptionsMenu({ search }: OptionsMenuProp) {
 
-    const { setCommandPaletteOpen , createNewPlaylist , setView , allSongs , setCurrentlyPlaying , setQueue } = useContext<AppContextProps>(AppContext)
+    const { setCommandPaletteOpen , createNewPlaylist , setView , allSongs , setCurrentlyPlaying , setQueue } = useAppState()
 
     const initialOptions = [
         {
@@ -46,11 +46,11 @@ function OptionsMenu({ search }: OptionsMenuProp) {
                 setView({ id: APPVIEWS.NOW_PLAYING })
             }
         },
-        // {
-        //     name: 'Theme',
-        //     icon: PaletteIcon,
-        //     callback: () => setView({ id: APPVIEWS.NOW_PLAYING })
-        // },
+        {
+            name: 'Theme',
+            icon: PaletteIcon,
+            callback: () => {}
+        },
     ]
 
     const [highlightIndex, setHighlightIndex] = useState(0)
@@ -83,10 +83,14 @@ function OptionsMenu({ search }: OptionsMenuProp) {
 
             const foundOption = options[highlightIndexRef.current]
 
-            foundOption?.callback?.()
-
-            setCommandPaletteOpen(false)
+            handleClick(foundOption)
         }
+    }
+
+    const handleClick = (option: any) => {
+        option?.callback?.()
+
+        setCommandPaletteOpen(false)
     }
 
 
@@ -103,9 +107,9 @@ function OptionsMenu({ search }: OptionsMenuProp) {
     useEffect(runSearch, [search])
 
     return (
-        <div className='flex-1 overflow-scroll font-geist-medium p-2'>
+        <div className='flex-1 overflow-auto font-geist-medium p-2'>
             {options.map((option, i) => (
-                <div key={i} className={`w-full flex items-center gap-4 p-2 rounded ${highlightIndex == i ? 'highlighted' : ''}`}>
+                <div onClick={() => handleClick(option)} key={i} className={`w-full flex items-center gap-4 p-2 rounded ${highlightIndex == i ? 'highlighted' : 'hover:bg-[var(--app-secondary-color)]'}`}>
                     <option.icon />
                     <p>{option.name}</p>
                 </div>

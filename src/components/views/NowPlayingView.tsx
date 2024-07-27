@@ -1,10 +1,11 @@
 import { AnimatePresence, Reorder, motion } from 'framer-motion'
-import { useContext, useEffect, useState } from 'react'
+import { MouseEvent, useContext, useEffect, useState } from 'react'
 import { AppContext } from '../../state/Provider'
 import { AppContextProps, Song } from '../../types'
 import SongListItem from '../shared/SongListItem'
 import Pluralize from '../shared/Pluralize'
 import Options from '../now-playing/Options'
+import { parseTime } from '../../helpers'
 
 const NowPlayingView = () => {
 
@@ -84,13 +85,24 @@ const NowPlayingView = () => {
         setTimePlayed(time)
     }
 
-    const handleMouseMove = (e: MouseEvent) => {
+    const handleMouseMove = (e: any) => {
 
         if(e.pageX > window.innerWidth - 100){
             setViewingOptions(true)
         }else{
             setViewingOptions(false)
         }
+    }
+
+    const handleSeek = (e: MouseEvent<HTMLDivElement , Event>) => {
+
+        const { width } = e.currentTarget.getBoundingClientRect()
+        
+        const point = e.clientX
+
+        const newCurrentTime = (point / width) * duration
+
+        player.current.currentTime = newCurrentTime
     }
 
     useEffect(() => {
@@ -127,10 +139,19 @@ const NowPlayingView = () => {
                     <main style={{ transition: '.5s ease-in-out', transform: `translateY(${viewingQueue ? '-100%' : '0%'})` }} className='size-full'>
                         <div className='size-full gradient flex flex-col gap-4 justify-end p-4 font-pixel'>
                             <h1 className='text-5xl'>{currentlyPlaying.title}</h1>
-                            <p>{currentlyPlaying.artist}</p>
-                            <div style={{ width: ((timePlayed / duration) * 100) + '%' }} className='h-[5px] bg-[var(--app-primary-color)] w-0'>
 
-                            </div>
+                            <p>{currentlyPlaying.artist}</p>
+
+                            <section className='w-full flex flex-col gap-4 group'>
+                                <div className='w-full flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity'>
+                                    <small className='font-geist-light'>{parseTime(timePlayed)}</small>
+                                    <small className='font-geist-light'>{parseTime(duration)}</small>
+                                </div>
+
+                                <div onClick={handleSeek} className='w-full h-[5px] group-hover:h-[15px] bg-transparent group-hover:bg-[var(--app-secondary-color)] transition-all delay-200'>
+                                    <div style={{ width: ((timePlayed / duration) * 100) + '%' }} className='h-full bg-[var(--app-primary-color)] w-0 pointer-events-none'></div>
+                                </div>
+                            </section>
                         </div>
                         <div className='size-full px-4 bg-[var(--gradient-color)] overflow-scroll pt-12'>
                             <Reorder.Group values={queue} onReorder={data => setQueue([...data])}>

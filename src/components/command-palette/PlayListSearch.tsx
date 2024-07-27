@@ -1,7 +1,7 @@
-import { useContext, useEffect, useRef, useState } from 'react'
-import { AppContext } from '../../state/Provider'
-import { APPVIEWS, AppContextProps, PlayList } from '../../types'
+import { useEffect, useRef, useState } from 'react'
+import { APPVIEWS, PlayList } from '../../types'
 import favouritesImg from '../../assets/images/favourites-background.png'
+import useAppState from '../../hooks/useAppState'
 
 type PlayListSearchProp = {
     search: string
@@ -9,7 +9,7 @@ type PlayListSearchProp = {
 
 function PlayListSearch({ search }: PlayListSearchProp) {
 
-    const { setCommandPaletteOpen, setView, allPlayLists } = useContext<AppContextProps>(AppContext)
+    const { setCommandPaletteOpen, setView, allPlayLists } = useAppState()
 
     const [highlightIndex, setHighlightIndex] = useState(0)
 
@@ -43,16 +43,28 @@ function PlayListSearch({ search }: PlayListSearchProp) {
 
             if(highlightIndexRef.current === 0){
 
-                setView({ id: APPVIEWS.FAVOURITES })
+                openFavourites()
             }else{
 
                 const foundPlayList = playLists[highlightIndexRef.current - 1]
     
-                if (foundPlayList) setView({ id: APPVIEWS.PLAYLIST, data: foundPlayList._id })
+                openPlayList(foundPlayList)
             }
 
             setCommandPaletteOpen(false)
         }
+    }
+
+    const openPlayList = (playList?: PlayList) => {
+        if (playList) setView({ id: APPVIEWS.PLAYLIST, data: playList._id })
+
+        setCommandPaletteOpen(false)
+    }
+
+    const openFavourites = () => {
+        setView({ id: APPVIEWS.FAVOURITES })
+
+        setCommandPaletteOpen(false)
     }
 
     const handleKeyDown = (e: any) => {
@@ -76,9 +88,9 @@ function PlayListSearch({ search }: PlayListSearchProp) {
     useEffect(onKey, [key])
 
     return (
-        <div className='flex-1 overflow-scroll font-geist-medium p-2'>
+        <div className='flex-1 overflow-auto font-geist-medium p-2'>
 
-            <div className={`w-full flex items-center gap-4 p-2 rounded ${highlightIndex == 0 ? 'highlighted' : ''} font-pixel`}>
+            <div onClick={openFavourites} className={`w-full flex items-center gap-4 p-2 rounded ${highlightIndex == 0 ? 'highlighted' : 'hover:bg-[var(--app-secondary-color)]'} font-pixel`}>
                 <div className='size-[40px] overflow-hidden rounded-md bg-[var(--app-secondary-color)]'>
                     <img src={favouritesImg} alt="" className='size-full object-cover' />
                 </div>
@@ -86,7 +98,7 @@ function PlayListSearch({ search }: PlayListSearchProp) {
             </div>
 
             {playLists.map((playlist, i) => (
-                <div key={i} className={`w-full flex items-center gap-4 p-2 rounded ${highlightIndex == i + 1 ? 'highlighted' : ''} font-pixel`}>
+                <div onClick={() => openPlayList(playlist)} key={i} className={`w-full flex items-center gap-4 p-2 rounded ${highlightIndex == i + 1 ? 'highlighted' : 'hover:bg-[var(--app-secondary-color)]'} font-pixel`}>
                     <div className='size-[40px] overflow-hidden rounded-md bg-[var(--app-secondary-color)]'>
                         {playlist.cover &&
                             <img src={playlist.cover || ''} alt={playlist.name} className='size-full object-cover' />

@@ -30,9 +30,6 @@ const CommandPalette = () => {
 
   return (
     <motion.div
-      // initial={{ opacity: 0 }} 
-      // animate={{ opacity: 1 }}
-      // exit={{ opacity: 0}}
       autoFocus={true}
       className='flex flex-col fixed z-[1000] top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 shadow-lg bg-[var(--app-base-color)] border-2 border-[var(--app-secondary-color)] rounded-md w-[90%] lg:w-[500px] h-[400px]'>
       <input

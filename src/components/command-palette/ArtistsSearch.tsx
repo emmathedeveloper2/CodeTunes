@@ -1,6 +1,6 @@
-import { useContext, useEffect, useRef, useState } from 'react'
-import { AppContext } from '../../state/Provider'
-import { APPVIEWS, AppContextProps, Artist } from '../../types'
+import { useEffect, useRef, useState } from 'react'
+import { APPVIEWS, Artist } from '../../types'
+import useAppState from '../../hooks/useAppState'
 
 type ArtistsSearchMenuProp = {
     search: string
@@ -8,7 +8,7 @@ type ArtistsSearchMenuProp = {
 
 function ArtistsSearchMenu({ search }: ArtistsSearchMenuProp) {
 
-    const { setCommandPaletteOpen , setView , allArtists } = useContext<AppContextProps>(AppContext)
+    const { setCommandPaletteOpen , setView , allArtists } = useAppState()
 
     const [highlightIndex, setHighlightIndex] = useState(0)
 
@@ -42,10 +42,14 @@ function ArtistsSearchMenu({ search }: ArtistsSearchMenuProp) {
 
             const foundArtist = artists[highlightIndexRef.current]
 
-            if(foundArtist) setView({ id: APPVIEWS.ARTIST , data: foundArtist })
-
-            setCommandPaletteOpen(false)
+            openArtist(foundArtist)
         }
+    }
+
+    const openArtist = (artist?: Artist) => {
+        if(artist) setView({ id: APPVIEWS.ARTIST , data: artist })
+
+        setCommandPaletteOpen(false)
     }
 
     const handleKeyDown = (e: any) => {
@@ -69,9 +73,9 @@ function ArtistsSearchMenu({ search }: ArtistsSearchMenuProp) {
     useEffect(onKey , [key])
 
     return (
-        <div className='flex-1 overflow-scroll font-geist-medium p-2'>
+        <div className='flex-1 overflow-auto font-geist-medium p-2'>
             {artists.map((artist, i) => (
-                <div key={i} className={`w-full flex items-center gap-4 p-2 rounded ${highlightIndex == i ? 'highlighted' : ''} font-pixel`}>
+                <div onClick={() => openArtist(artist)} key={i} className={`w-full flex items-center gap-4 p-2 rounded ${highlightIndex == i ? 'highlighted' : 'hover:bg-[var(--app-secondary-color)]'} font-pixel`}>
                     <div className='size-[40px] overflow-hidden rounded-md bg-[var(--app-secondary-color)]'>
                         {artist.songs[0]?.cover && 
                             <img src={artist.songs[0].cover || ''} alt={artist.name} className='size-full object-cover' />

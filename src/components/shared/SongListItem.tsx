@@ -13,9 +13,9 @@ type SongListItemProps = {
 const PlayingIndicator = () => {
 
     return (
-        <div className="absolute h-[70%] w-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center gap-1">
+        <div className="absolute h-[70%] w-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-end justify-center gap-1 p-[2px]">
             <div style={{ animationDelay: '0s' }} className="bg-[var(--app-primary-color)] animate-playing h-full w-[5px]"></div>
-            <div style={{ animationDelay: '.3s' }} className="bg-[var(--app-primary-color)] animate-playing h-full w-[5px]"></div>
+            <div style={{ animationDelay: '.5s' }} className="bg-[var(--app-primary-color)] animate-playing h-full w-[5px]"></div>
             <div style={{ animationDelay: '.2s' }} className="bg-[var(--app-primary-color)] animate-playing h-full w-[5px]"></div>
         </div>
     )
@@ -41,7 +41,7 @@ const SongListItem = ({ song, onClick, index, showExtras = true }: SongListItemP
                     {song.cover &&
                         <img src={song.cover} alt={song.cover} className='size-full object-cover' />
                     }
-                    {currentlyPlaying?._id == song._id &&
+                    {currentlyPlaying?._id == song._id && showExtras &&
                         <PlayingIndicator />
                     }
                 </div>

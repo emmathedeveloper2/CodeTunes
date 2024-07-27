@@ -1,6 +1,6 @@
-import { useContext, useEffect, useRef, useState } from 'react'
-import { AppContext } from '../../state/Provider'
-import { APPVIEWS, AppContextProps, PlayList } from '../../types'
+import { useEffect, useRef, useState } from 'react'
+import { APPVIEWS, Album, PlayList } from '../../types'
+import useAppState from '../../hooks/useAppState'
 
 type AlbumSearchProp = {
     search: string
@@ -8,7 +8,7 @@ type AlbumSearchProp = {
 
 function AlbumSearch({ search }: AlbumSearchProp) {
 
-    const { setCommandPaletteOpen , setView , allAlbums } = useContext<AppContextProps>(AppContext)
+    const { setCommandPaletteOpen, setView, allAlbums } = useAppState()
 
     const [highlightIndex, setHighlightIndex] = useState(0)
 
@@ -16,7 +16,7 @@ function AlbumSearch({ search }: AlbumSearchProp) {
 
     const [albums, setAlbums] = useState<PlayList[]>([])
 
-    const [key, setKey] = useState({ code: '' , char: '' })
+    const [key, setKey] = useState({ code: '', char: '' })
 
 
     const runSearch = () => {
@@ -42,14 +42,18 @@ function AlbumSearch({ search }: AlbumSearchProp) {
 
             const foundAlbum = albums[highlightIndexRef.current]
 
-            if(foundAlbum) setView({ id: APPVIEWS.ALBUM , data: foundAlbum._id })
-
-            setCommandPaletteOpen(false)
+            openAlbum(foundAlbum)
         }
     }
 
+    const openAlbum = (album?: Album) => {
+        if (album) setView({ id: APPVIEWS.ALBUM, data: album._id })
+
+        setCommandPaletteOpen(false)
+    }
+
     const handleKeyDown = (e: any) => {
-        setKey({ code: (Math.random() * 10).toString() , char: e.key })
+        setKey({ code: (Math.random() * 10).toString(), char: e.key })
     }
 
 
@@ -66,14 +70,18 @@ function AlbumSearch({ search }: AlbumSearchProp) {
 
     useEffect(runSearch, [search])
 
-    useEffect(onKey , [key])
+    useEffect(onKey, [key])
 
     return (
         <div className='flex-1 overflow-scroll font-geist-medium p-2'>
             {albums.map((album, i) => (
-                <div key={i} className={`w-full flex items-center gap-4 p-2 rounded ${highlightIndex == i ? 'highlighted' : ''} font-pixel`}>
+                <div 
+                    onClick={() => openAlbum(album)} 
+                    key={i} 
+                    className={`w-full flex items-center gap-4 p-2 rounded ${highlightIndex == i ? 'highlighted' : 'hover:bg-[var(--app-secondary-color)]'} font-pixel`}
+                >
                     <div className='size-[40px] overflow-hidden rounded-md bg-[var(--app-secondary-color)]'>
-                        {album.cover && 
+                        {album.cover &&
                             <img src={album.cover || ''} alt={album.name} className='size-full object-cover' />
                         }
                     </div>

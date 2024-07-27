@@ -25,14 +25,14 @@ function AlbumView() {
 
     const handleClick = (song: Song) => {
 
-        setCurrentlyPlaying(song)
-
         if (songs.length) setQueue(songs)
+
+        setCurrentlyPlaying(song)
     }
 
     useEffect(() => {
         loadAlbum()
-    }, [])
+    }, [allSongs])
 
     useEffect(() => {
         if (view.id === APPVIEWS.ALBUM && view.data !== album?._id) loadAlbum()

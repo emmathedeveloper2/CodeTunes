@@ -1,8 +1,10 @@
 import { createContext, useEffect, useRef, useState } from "react";
-import { APPVIEWS, Album, AppContextProps, AppViewData, Artist, PlayList, Song, ToastProps } from "../types";
+import { APPVIEWS, Album, AppContextProps, AppViewData, Artist, ModalProps, PlayList, Song, ToastProps } from "../types";
 import { playListsStore, songsStore } from '../db/index'
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { exists } from "@tauri-apps/api/fs";
+import { dialog } from "@tauri-apps/api";
+import { processSong } from "../helpers";
 
 const AppContext = createContext<AppContextProps | any>({})
 
@@ -28,6 +30,8 @@ const AppProvider = ({ children }: AppProviderProps) => {
 
     const [songToToggleInPlayList, setSongToToggleInPlayList] = useState<Song>()
 
+    const [ loop , setLoop ] = useState(false)
+
     const [favouriteSongs, setFavouriteSongs] = useState<number[]>(JSON.parse(localStorage.getItem('favourites') || '[]'))
 
     const [queue, setQueue] = useState<Song[]>([])
@@ -38,6 +42,8 @@ const AppProvider = ({ children }: AppProviderProps) => {
 
     const [toast, setToast] = useState<ToastProps>()
 
+    const [modal, setModal] = useState<ModalProps>()
+
     const toastTimer = useRef<number>()
 
     const showToast = (options: ToastProps) => {
@@ -47,6 +53,10 @@ const AppProvider = ({ children }: AppProviderProps) => {
         setToast(options)
 
         toastTimer.current = setTimeout(() => setToast(undefined), 2500)
+    }
+
+    const closeModal = () => {
+        setModal({ open: false , title: '' , description: '' , buttons: [] })
     }
 
     const createNewPlaylist = async () => {
@@ -108,13 +118,77 @@ const AppProvider = ({ children }: AppProviderProps) => {
 
     const handleCurrentlyPlaying = async () => {
 
-        if (!currentlyPlaying || !await exists(currentlyPlaying.path)) return
+        if (!currentlyPlaying){
+            return
+        }else if(currentlyPlaying && !await exists(currentlyPlaying.path)){
+
+            setModal({
+                open: true,
+                title: 'Song not found!',
+                description: "You might have moved this song to a different location or deleted it entirely",
+                buttons: [
+                    { 
+                        text: 'Select new location' , 
+                        onClick: async () => {
+                            try {
+                                await reSelectSong(currentlyPlaying)
+
+                                closeModal()
+                            } catch (error) {
+                                console.log(error)
+                            }
+                        }
+                    },
+                    { 
+                        text: 'Remove song' , 
+                        onClick: () => { deleteSong(currentlyPlaying); closeModal() } 
+                    }
+                ]
+            })
+
+            return
+        }
 
         playSong(currentlyPlaying)
 
         currentlyPlayingRef.current = currentlyPlaying
 
         document.title = currentlyPlaying.title
+    }
+
+    const reSelectSong = async (oldSong: Song) => {
+
+        const newSongPath = await dialog.open({ title: 'Pick a song to replace the existing one' , filters: [ { name: 'Songs' , extensions: [ 'mp3' ] } ] })
+
+        if(!newSongPath || !(typeof newSongPath === 'string')) throw Error('Invalid Path')
+
+        const foundSong = await processSong(newSongPath)
+
+        const id = await songsStore.updateOne(oldSong._id as number , data => ({...data , ...foundSong}))
+
+        const newSong = {
+            ...foundSong,
+            _id: id, 
+        }
+
+        setAllSongs(prevSongs => [...prevSongs.filter(s => s._id != oldSong._id) , newSong])
+
+        if(currentlyPlaying?._id === oldSong._id) setCurrentlyPlaying(newSong)
+    }
+
+    const deleteSong = async (song: Song) => {
+
+        await songsStore.deleteOne(song._id as number)
+
+        if(currentlyPlaying?._id === song._id && queue.length && queue.find(s => s._id === currentlyPlaying?._id)) nextSong()
+
+        if(currentlyPlaying?._id === song._id) setCurrentlyPlaying(null)
+
+        if(view.id === APPVIEWS.NOW_PLAYING) setView({ id: APPVIEWS.BLANK })
+
+        setAllSongs(prevSongs => prevSongs.filter(s => s._id !== song._id))
+
+        showToast({ message: 'Song removed' , type: 'info' , shown: true })
     }
 
     const getNextSong = () => {
@@ -140,7 +214,6 @@ const AppProvider = ({ children }: AppProviderProps) => {
         const nextSongIndex = queue.findIndex(s => s.path == currentlyPlayingRef.current?.path) + 1
 
         const nextSong = queue[nextSongIndex]
-
 
         if (nextSong) setCurrentlyPlaying(nextSong)
     }
@@ -181,6 +254,10 @@ const AppProvider = ({ children }: AppProviderProps) => {
         handleCurrentlyPlaying()
     }, [currentlyPlaying])
 
+    useEffect(() => {
+        player.current.loop = loop
+    } , [loop])
+
     return (
         <AppContext.Provider value={{
             view,
@@ -209,10 +286,15 @@ const AppProvider = ({ children }: AppProviderProps) => {
             getNextSong,
             favouriteSongs,
             setFavouriteSongs,
+            loop,
+            setLoop,
             toggleFavourites,
             toast,
             setToast,
-            showToast
+            showToast,
+            modal,
+            setModal,
+            closeModal
         }}>
             {children}
         </AppContext.Provider>

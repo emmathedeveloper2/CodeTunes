@@ -1,8 +1,7 @@
-import { useContext, useEffect } from "react"
+import { useEffect } from "react"
 import CommandPalette from "./components/command-palette/CommandPalette"
 import { useKeyboardEvents } from "./hooks/KeyboardEvents"
-import { AppContext } from "./state/Provider"
-import { APPVIEWS, AppContextProps } from "./types"
+import { APPVIEWS } from "./types"
 import PlayListView from "./components/views/PlayListView"
 import ScanningFolderView from "./components/views/ScanningFolderView"
 import NowPlayingView from "./components/views/NowPlayingView"
@@ -12,12 +11,14 @@ import AlbumView from "./components/views/AlbumView"
 import ToggleInPlaylist from "./components/now-playing/ToggleInPlaylist"
 import FavouritesView from "./components/views/FavouritesView"
 import Toast from "./components/shared/Toast"
+import useAppState from "./hooks/useAppState"
+import Modal from "./components/shared/Modal"
 
 function App() {
 
-  const { onOpenCommandPalette , onEscape } = useKeyboardEvents()
+  const { onOpenCommandPalette , onEscape , onOpenView } = useKeyboardEvents()
 
-  const { view , commandPaletteOpen , setCommandPaletteOpen , songToToggleInPlayList , toast } = useContext<AppContextProps>(AppContext)
+  const { view , setView , commandPaletteOpen , setCommandPaletteOpen , songToToggleInPlayList , toast , modal } = useAppState()
 
   onOpenCommandPalette(() => setCommandPaletteOpen(true))
 
@@ -25,8 +26,13 @@ function App() {
     setCommandPaletteOpen(false)
   })
 
+  onOpenView(() => {
+    setView({ id: APPVIEWS.NOW_PLAYING })
+  })
+
   useEffect(() => {
-    document.addEventListener('contextmenu' , e => e.preventDefault())
+    
+    if(import.meta.env.PROD) document.addEventListener('contextmenu' , e => e.preventDefault())
   } , [])
 
   return (
@@ -39,7 +45,7 @@ function App() {
           or
           <span className="bg-[var(--app-secondary-color)] text-[var(--app-on-secondary-color)] rounded px-2">CTRL</span> 
           + 
-          <span className="bg-[var(--app-secondary-color)] text-[var(--app-on-secondary-color)] rounded px-2">K</span> 
+          <span className="bg-[var(--app-secondary-color)] text-[var(--app-on-secondary-color)] rounded px-2">P</span> 
         </p>
       </div>
 
@@ -60,6 +66,8 @@ function App() {
       {songToToggleInPlayList && <ToggleInPlaylist song={songToToggleInPlayList}/>}
 
       {toast?.shown && <Toast toast={toast}/>}
+
+      {modal?.open && <Modal data={modal}/>}
     </>
   )
 }
